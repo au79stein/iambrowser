@@ -28,6 +28,7 @@ def list_policies():
     for policy in response["Policies"]:
       print(f"{linenum: 4d}: ", end="")
       print(f"PolicyId: {policy['PolicyId']}, PolicyName: {policy['PolicyName']}", end="")
+      print(f"PolicyArn: {policy['Arn']}", end="")
       print()
       linenum = linenum + 1
   
@@ -45,6 +46,25 @@ def list_users():
         print(f" PasswordLastUsed: Never", end="")
       print()
       linenum = linenum + 1
+
+
+def get_policy_version(policyarn, versionid):
+  iam = boto3.client('iam', region_name=region)
+  response = iam.get_policy_version(PolicyArn=policyarn, VersionId=versionid)['PolicyVersion']
+  print(f"VersionId: {response['VersionId']}, \n")
+  print(f"{response['Document']}", end="")
+  print()
+  pprint(response['Document'])
+
+
+def get_policy(policyarn):
+  iam = boto3.client('iam', region_name=region)
+  response = iam.get_policy(PolicyArn=policyarn)['Policy']
+  print(f"PolicyName: {response['PolicyName']}, PolicyId: {response['PolicyId']}, AttachmentCount: {response['AttachmentCount']}, DefaultVersionId: {response['DefaultVersionId']}, Arn: {response['Arn']}", end="")
+  print()
+  print("temporarily added call here to get_policy_version to display document also")
+  versionid = response['DefaultVersionId']
+  get_policy_version(policyarn, versionid)
 
 
 def get_group(groupname):
@@ -157,7 +177,7 @@ def list_attached_group_policies(groupname):
 
 def menu():
   title = "make a selection..."
-  options = ['list users', 'list groups', 'list groups for user', 'get users in group', 'list user policies', 'list policies', 'list attached user policies', 'list group policies', 'list attached group policies', 'exit']
+  options = ['list users', 'list groups', 'list groups for user', 'get users in group', 'list user policies', 'list policies', 'list attached user policies', 'list group policies', 'list attached group policies', 'get policy', 'exit']
   selected = pick(options, title, multiselect=False, min_selection_count=1)
   print(f"you picked: {selected[1]} -> {selected[0]}")
   return selected[1]
@@ -187,7 +207,10 @@ def main():
     elif sel == 8: 
       groupname = input('enter group name: ')
       list_attached_group_policies(groupname)
-    elif sel == 9: exit()
+    elif sel == 9: 
+      policyarn = input('enter policy arn: ')
+      get_policy(policyarn)
+    elif sel == 10: exit()
     else:
       print("invalid selection")
       break
