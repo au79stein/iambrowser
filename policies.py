@@ -28,7 +28,7 @@ def list_policies():
     for policy in response["Policies"]:
       print(f"{linenum: 4d}: ", end="")
       print(f"PolicyId: {policy['PolicyId']}, PolicyName: {policy['PolicyName']}", end="")
-      print(f"PolicyArn: {policy['Arn']}", end="")
+      print(f" Arn: {policy['Arn']}", end="")
       print()
       linenum = linenum + 1
   
