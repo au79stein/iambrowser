@@ -68,6 +68,8 @@ class Policy:
   arn                = ""
   attachmentcount    = ""
   defaultversionid   = ""
+  # not sure, do I want to save the policy document
+  document           = ""
 
   def __init__(self, policyname, policyid, arn):
     self.policyname = policyname
@@ -75,7 +77,10 @@ class Policy:
     self.arn        = arn
 
   def show(self, nl=False):
-      print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn},  AttachCount: {self.attachmentcount}, DefaultVerId: {self.defaultversionid}")
+    print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn},  AttachCount: {self.attachmentcount}, DefaultVerId: {self.defaultversionid}")
+
+  def show_document(self):
+    pprint(self.document)
       
 
     

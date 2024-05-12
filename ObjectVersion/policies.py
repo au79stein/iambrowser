@@ -15,9 +15,18 @@ service = "iam"
 attachedPolicyList = []
 users = []
 
+
+def locate_policy_by_arn(policyarn):
+  '''lookup a policy by arn'''
+  for a in attachedPolicyList:
+    if a.arn == policyarn:
+      a.show()
+      return a
+  return None
+
+
 def locate_policy_by_name(policyname):
-  '''lookup a policy by name 
-  '''
+  '''lookup a policy by name '''
   for p in attachedPolicyList:
     if p.policyname == policyname:
       #p.show()
@@ -26,6 +35,7 @@ def locate_policy_by_name(policyname):
 
 
 def locate_user(username):
+  '''lookup a user seaching by name'''
   for u in users:
     if u.username == username:
       print(f"found {username}")
@@ -35,6 +45,8 @@ def locate_user(username):
 
 
 def print_list(policyList, msg=""):
+  '''print any list of objects we have created 
+     by calling show() method'''
   if msg:
     title = msg
   else:
@@ -49,6 +61,7 @@ def print_list(policyList, msg=""):
 
 
 def build_list_of_users(userList):
+  '''creates a list of user objects'''
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_users')
   for response in paginator.paginate():
@@ -62,6 +75,9 @@ def build_list_of_users(userList):
 
 
 def build_attached_policies_list(policyList):
+  '''creates a list of attached policies
+     attached policies are a subset of all policies
+     but are actually attached to something'''
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_policies')
   policy_params = {'OnlyAttached': True}
@@ -71,6 +87,7 @@ def build_attached_policies_list(policyList):
 
 
 def update_policy_data(policyarn):
+  '''update a policy object with attachment count and version id'''
   iam = boto3.client('iam', region_name=region)
   response = iam.get_policy(PolicyArn=policyarn)['Policy']
   p = locate_policy_by_name(response['PolicyName'])
@@ -84,6 +101,17 @@ def update_policy_data(policyarn):
   #print("temporarily added call here to get_policy_version to display document also")
   #versionid = response['DefaultVersionId']
   #get_policy_version(policyarn, versionid)
+
+
+def get_policy_document(policyarn, versionid):
+  iam = boto3.client('iam', region_name=region)
+  response = iam.get_policy_version(PolicyArn=policyarn, VersionId=versionid)['PolicyVersion']
+  
+  print(f"VersionId: {response['VersionId']}, \n")
+  print(f"{response['Document']}", end="")
+  print()
+  pprint(response['Document'])
+
 
   
 def main():
@@ -107,7 +135,13 @@ def main():
 
   update_policy_data('arn:aws:iam::aws:policy/PowerUserAccess')
 
+  polarn = locate_policy_by_arn('arn:aws:iam::aws:policy/PowerUserAccess')
+  if polarn:
+    polarn.show()
+  else:
+    print("policy arn not found")
+
+
 if __name__ == "__main__":
   main()
-
 
