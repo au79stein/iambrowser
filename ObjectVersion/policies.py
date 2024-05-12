@@ -104,15 +104,16 @@ def update_policy_data(policyarn):
 
 
 def get_policy_document(policyarn, versionid):
-  iam = boto3.client('iam', region_name=region)
-  response = iam.get_policy_version(PolicyArn=policyarn, VersionId=versionid)['PolicyVersion']
+  '''get the policy document using policyarn and versionid'''
+  pa = locate_policy_by_arn(policyarn)
+  if pa:
+    iam = boto3.client('iam', region_name=region)
+    response = iam.get_policy_version(PolicyArn=policyarn, VersionId=versionid)['PolicyVersion']
+    pa.document = response['Document']
+    pa.show_document()
+  else:
+    print(f"policy arn {policyarn} not found")
   
-  print(f"VersionId: {response['VersionId']}, \n")
-  print(f"{response['Document']}", end="")
-  print()
-  pprint(response['Document'])
-
-
   
 def main():
   build_attached_policies_list(attachedPolicyList)
@@ -141,6 +142,7 @@ def main():
   else:
     print("policy arn not found")
 
+  get_policy_document('arn:aws:iam::aws:policy/PowerUserAccess', 'v5')
 
 if __name__ == "__main__":
   main()

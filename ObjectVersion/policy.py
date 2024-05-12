@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # user.py
+from pprint import pprint
 
 
 class User:
