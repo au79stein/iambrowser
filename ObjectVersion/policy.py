@@ -5,20 +5,24 @@
 class User:
   # Username: rgoldstein, Arn: arn:aws:iam::079704269206:user/rgoldstein, Created: 04/25/2024 PasswordLastUsed: 05/09/2024
 
-  username = ""
-  userid   = ""
-  arn      = ""
+  username    = ""
+  userid      = ""
+  arn         = ""
+  create_date = ""
+  pw_date     = ""
   groups = []
   attached_user_policies = []
   inline_user_policies = []
 
-  def __init__(self, username, userid, arn):
-    self.username = username
-    self.userid   = userid
-    self.arn      = arn
+  def __init__(self, username, userid, arn, create_date, pw_date):
+    self.username    = username
+    self.userid      = userid
+    self.arn         = arn
+    self.create_date = create_date
+    self.pw_date     = pw_date
 
   def show(self):
-    print(f"UserName: {self.username}, UserId: {self.userid}, Arn: {self.arn}")
+    print(f"UserName: {self.username}, UserId: {self.userid}, Arn: {self.arn}, Created: {self.create_date}, PWDate: {self.pw_date}")
 
   def add_group(self, group):
     self.groups.append(group)
@@ -59,24 +63,17 @@ class Group:
     
 
 class Policy:
+  policyname = ""
+  policyid   = ""
+  arn        = ""
 
+  def __init__(self, policyname, policyid, arn):
+    self.policyname = policyname
+    self.policyid   = policyid
+    self.arn        = arn
+
+  def show(self, nl=False):
+      print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn}")
+      
 
     
-rgoldstein = User("rgoldstein", "ABC123", "arn:aws:iam::079704269206:user/rgoldstein")
-rgoldstein.show()
-
-devops_beginner = Group("devops-beginner", "AGPARFDV6UGLOMCC4MNWD", "")
-devops_beginner.show()
-
-# GroupName: BaseConsole,  GroupId: AGPARFDV6UGLGRRENGNOQ
-baseconsole = Group("BaseConsole", "AGPARFDV6UGLGRRENGNOQ", "")
-baseconsole.show()
-
-rgoldstein.add_group(devops_beginner)
-rgoldstein.add_group(baseconsole)
-
-print("--- listing groups for user {} ---".format(rgoldstein.username))
-rgoldstein.show_groups()
-
-
-

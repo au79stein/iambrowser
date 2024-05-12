@@ -71,3 +71,7 @@ tcp_healthchecker.zip
 *.external_modules
 external_modules
 external_modules/*
+
+# Python
+__pycache__
+__pycache__/*
