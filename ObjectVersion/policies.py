@@ -15,6 +15,25 @@ service = "iam"
 attachedPolicyList = []
 users = []
 
+def locate_policy_by_name(policyname):
+  '''lookup a policy by name 
+  '''
+  for p in attachedPolicyList:
+    if p.policyname == policyname:
+      #p.show()
+      return p
+  return None
+
+
+def locate_user(username):
+  for u in users:
+    if u.username == username:
+      print(f"found {username}")
+      #u.show()
+      return u
+  return None
+
+
 def print_list(policyList, msg=""):
   if msg:
     title = msg
@@ -50,6 +69,22 @@ def build_attached_policies_list(policyList):
     for policy in response["Policies"]:
       policyList.append(P.Policy(policy['PolicyName'], policy['PolicyId'], policy['Arn']))
 
+
+def update_policy_data(policyarn):
+  iam = boto3.client('iam', region_name=region)
+  response = iam.get_policy(PolicyArn=policyarn)['Policy']
+  p = locate_policy_by_name(response['PolicyName'])
+  if p:
+    p.attachmentcount  =  response['AttachmentCount']
+    p.defaultversionid =  response['DefaultVersionId']
+    p.show()
+
+  #print(f"PolicyName: {response['PolicyName']}, PolicyId: {response['PolicyId']}, AttachmentCount: {response['AttachmentCount']}, DefaultVersionId: {response['DefaultVersionId']}, Arn: {response['Arn']}", end="")
+  #print()
+  #print("temporarily added call here to get_policy_version to display document also")
+  #versionid = response['DefaultVersionId']
+  #get_policy_version(policyarn, versionid)
+
   
 def main():
   build_attached_policies_list(attachedPolicyList)
@@ -58,6 +93,19 @@ def main():
   build_list_of_users(users)
   print_list(users, msg="List of Users")
 
+  rich = locate_user('rgoldstein')
+  if rich:
+    rich.show()
+  else:
+    print("user not found")
+
+  pol = locate_policy_by_name('terraform-staging-only')
+  if pol:
+    pol.show()
+  else:
+    print("policy not found")
+
+  update_policy_data('arn:aws:iam::aws:policy/PowerUserAccess')
 
 if __name__ == "__main__":
   main()

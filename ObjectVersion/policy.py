@@ -63,9 +63,11 @@ class Group:
     
 
 class Policy:
-  policyname = ""
-  policyid   = ""
-  arn        = ""
+  policyname         = ""
+  policyid           = ""
+  arn                = ""
+  attachmentcount    = ""
+  defaultversionid   = ""
 
   def __init__(self, policyname, policyid, arn):
     self.policyname = policyname
@@ -73,7 +75,7 @@ class Policy:
     self.arn        = arn
 
   def show(self, nl=False):
-      print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn}")
+      print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn},  AttachCount: {self.attachmentcount}, DefaultVerId: {self.defaultversionid}")
       
 
     
