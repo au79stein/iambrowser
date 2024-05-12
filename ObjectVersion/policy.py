@@ -100,15 +100,17 @@ class Policy:
   policyname         = ""
   policyid           = ""
   arn                = ""
-  attachmentcount    = ""
+  attachmentcount    = 0
   defaultversionid   = ""
   # not sure, do I want to save the policy document
   document           = ""
 
   def __init__(self, policyname, policyid, arn):
-    self.policyname = policyname
-    self.policyid   = policyid
-    self.arn        = arn
+    self.policyname       = policyname
+    self.policyid         = policyid
+    self.arn              = arn
+    self.attachmentcount  = 0
+    self.defaultversionid = ""
 
   def show(self, nl=False):
     print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn},  AttachCount: {self.attachmentcount}, DefaultVerId: {self.defaultversionid}")

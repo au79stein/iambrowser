@@ -122,6 +122,13 @@ def update_policy_data(policyarn):
     p.show()
 
 
+def update_all_policies_data():
+  '''loop through attached policies list
+     for each policy, update policy data'''
+  for p in attachedPolicyList:
+    update_policy_data(p.arn)
+
+
 def get_policy_document(policyarn, versionid):
   '''get the policy document using policyarn and versionid'''
   pa = locate_policy_by_arn(policyarn)
@@ -363,8 +370,12 @@ def init_build_lists():
   ####################################################
   add_groups_to_users()
 
+  ###############################################################
+  # add user policies, inline and attached to user policy lists #
+  ###############################################################
   add_user_policies()
 
+  update_all_policies_data()
 
 def main():
 
