@@ -68,6 +68,7 @@ def get_policy(policyarn):
 
 
 def get_group(groupname):
+  '''get users in a group'''
   linenum = 1
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('get_group')
@@ -100,6 +101,7 @@ def list_user_policies(username):
 
 
 def list_groups_for_user(username):
+  '''list groups to which a user belongs'''
   linenum = 1
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_groups_for_user')
@@ -116,6 +118,7 @@ def list_groups_for_user(username):
 
 
 def list_groups():
+  '''list all groups'''
   linenum = 1
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_groups')
@@ -144,6 +147,7 @@ def list_attached_user_policies(username):
 
 
 def list_group_policies(groupname):
+  '''list group inline policies'''
   linenum = 1
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_group_policies')
@@ -160,6 +164,7 @@ def list_group_policies(groupname):
 
 
 def list_attached_group_policies(groupname):
+  '''list group attached policies'''
   linenum = 1
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_attached_group_policies')

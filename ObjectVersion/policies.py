@@ -8,6 +8,12 @@ from pprint import pprint
 from pick import pick
 import policy as P
 
+RESET  = "\033[0m"
+RED    = "\033[0;31m"
+GREEN  = "\033[0;32m"
+YELLOW = "\033[0;33m"
+CYAN   = "\033[0;36m"
+
 profile = "mfa"
 region  = "us-east-2"
 service = "iam"
@@ -58,7 +64,7 @@ def print_list(policyList, msg=""):
   '''print any list of objects we have created 
      by calling show() method'''
   if msg:
-    title = msg
+    title = GREEN+msg+RESET
   else:
     title = "-----"
   print(f"-----{title}-----")
@@ -128,7 +134,29 @@ def get_policy_document(policyarn, versionid):
     print(f"policy arn {policyarn} not found")
   
 
+def list_groups_for_user(username):
+  '''list groups to which a user belongs'''
+  linenum = 1
+  un = locate_user_by_name(username)
+  iam = boto3.client('iam', region_name=region)
+  paginator = iam.get_paginator('list_groups_for_user')
+  group_params = {'UserName': username}
+  try:
+    for response in paginator.paginate(**group_params):
+      for group in response['Groups']:
+        gn = locate_group_by_name(group['GroupName'])
+        if gn:
+          un.groups.append(gn)
+        print(f"{linenum: 4d}: ", end="")
+        print(f"GroupName: {group['GroupName']},  GroupId: {group['GroupId']}", end="")
+        print()
+        linenum = linenum + 1
+  except ClientError:
+    print("couldn't list groups for {}".format(username))
+
+
 def add_users_in_group(groupname):
+  '''get users in a group and add them to the group membership list'''
   gn = locate_group_by_name(groupname)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('get_group')
@@ -203,6 +231,17 @@ def test_update_policy_data():
   update_policy_data('arn:aws:iam::aws:policy/PowerUserAccess')
 
 
+def test_get_groups_for_user():
+  ############################
+  # test get groups for user #
+  ############################
+  for u in users:
+    print(f"Username = {u.username}")
+    list_groups_for_user(u.username)
+    u.show_groups()
+    print()
+  
+
 def test_inline_and_attached_policies():
   #################################################
   ### testing user inline and attached policies ###
@@ -228,6 +267,9 @@ def test_inline_and_attached_policies():
 
 
 def test_lookup_groups(test_group_names):
+  #test_group_names = ['devops-beginner', 'admin']
+  #test_lookup_groups(test_group_names)
+
   for g in test_group_names:
     testgrp = locate_group_by_name(g)
     if testgrp:
@@ -237,6 +279,10 @@ def test_lookup_groups(test_group_names):
 
 
 def test_lookup_policies(test_policy_names, test_policy_arns):
+  #test_policy_names = ['terraform-stagin-only']
+  #test_policy_arns  = ['arn:aws:iam::aws:policy/PowerUserAccess']
+  #test_lookup_policies(test_policy_names, test_policy_arns)
+
   for n in test_policy_names:
     testpol = locate_policy_by_name(n)
     if testpol:
@@ -262,6 +308,10 @@ def test_lookup_users(test_users):
 
 
 def add_users_to_groups():
+  ''' go thru the list of groups
+      get the users in each group
+      update the group with the names of each user
+      that is a member'''
   for g in groups:
     gn = locate_group_by_name(g.groupname)
     add_users_in_group(g.groupname)
@@ -296,13 +346,6 @@ def main():
   init_build_lists()
 
   
-  test_policy_names = ['terraform-stagin-only']
-  test_policy_arns  = ['arn:aws:iam::aws:policy/PowerUserAccess']
-  test_lookup_policies(test_policy_names, test_policy_arns)
-
-  test_group_names = ['devops-beginner', 'admin']
-  test_lookup_groups(test_group_names)
-
 
 if __name__ == "__main__":
   main()
