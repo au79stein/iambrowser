@@ -21,7 +21,7 @@ def locate_policy_by_arn(policyarn):
   '''lookup a policy by arn'''
   for a in attachedPolicyList:
     if a.arn == policyarn:
-      a.show()
+      #a.show()
       return a
   return None
 
@@ -35,11 +35,11 @@ def locate_policy_by_name(policyname):
   return None
 
 
-def locate_user(username):
+def locate_user_by_name(username):
   '''lookup a user seaching by name'''
   for u in users:
     if u.username == username:
-      print(f"found {username}")
+      #print(f"found {username}")
       #u.show()
       return u
   return None
@@ -136,13 +136,65 @@ def add_users_in_group(groupname):
   try:
     for response in paginator.paginate(**group_params):
       for user in response['Users']:
-        
-
-        print(f"UserName: {user['UserName']}", end="")
+        un = locate_user_by_name(user['UserName'])
+        if un:
+          gn.users.append(un)
   except ClientError:
-    print("couldn't list users for {}".format(groupname))
+    print("couldn't get users for {}".format(groupname))
 
   
+def add_user_attached_policies(username):
+  '''get user attached policies'''
+  u = locate_user_by_name(username)
+  iam = boto3.client('iam', region_name=region)
+  paginator = iam.get_paginator('list_attached_user_policies')
+  policy_params = {'UserName': username}
+  try:
+    for response in paginator.paginate(**policy_params):
+      for policy in response['AttachedPolicies']:
+        p = locate_policy_by_name(policy['PolicyName'])
+        if p:
+          u.attached_policies.append(p)
+  except ClientError:
+    print("couldn't list attached policies for {}".format(username))
+
+'''
+============================
+def list_attached_user_policies(username):
+  linenum = 1
+  iam = boto3.client('iam', region_name=region)
+  paginator = iam.get_paginator('list_attached_user_policies')
+  policy_params = {'UserName': username}
+  try:
+    for response in paginator.paginate(**policy_params):
+      for policy in response['AttachedPolicies']:
+        print(f"{linenum: 4d}: ", end="")
+        print(f"PolicyName: {policy['PolicyName']}", end="")
+        print()
+        linenum = linenum + 1
+  except ClientError:
+    print("couldn't list attached policies for {}".format(username))
+
+============================
+'''
+
+def add_user_inline_policies(username):
+  '''get user inline policies'''
+  u = locate_user_by_name(username)
+  iam = boto3.client('iam', region_name=region)
+  paginator = iam.get_paginator('list_user_policies')
+  policy_params = {'UserName': username}
+  try:
+    for response in paginator.paginate(**policy_params):
+      for policy in response['PolicyNames']:
+        p = locate_policy_by_name(policy)
+        if p:
+          u.inline_policies.append(p)
+          u.show_policies()
+  except ClientError:
+    print("couldn't list inline policies for {}".format(username))
+
+
 def main():
   build_attached_policies_list(attachedPolicyList)
   print_list(attachedPolicyList, msg="List of Attached Policies")
@@ -153,7 +205,7 @@ def main():
   build_list_of_groups(groups)
   print_list(groups, msg="List of Groups")
 
-  rich = locate_user('rgoldstein')
+  rich = locate_user_by_name('rgoldstein')
   if rich:
     rich.show()
   else:
@@ -174,6 +226,37 @@ def main():
     print("policy arn not found")
 
   get_policy_document('arn:aws:iam::aws:policy/PowerUserAccess', 'v5')
+
+  gn = locate_group_by_name('devops-beginner')
+  add_users_in_group('devops-beginner')
+  gn.show_users()
+
+  gn = locate_group_by_name('admin')
+  add_users_in_group('admin')
+  gn.show_users()
+
+
+  #################################################
+  ### testing user inline and attached policies ###
+  #################################################
+  '''
+  for u in users:
+    print(f">> {u.username}")
+    add_user_inline_policies(u.username)
+    u.show_inline_policies()
+
+  for u in users:
+    print(f"!! {u.username}")
+    add_user_attached_policies(u.username)
+    u.show_attached_policies()
+  '''
+  for u in users:
+    print(f">> {u.username}")
+    add_user_inline_policies(u.username)
+    u.show_inline_policies()
+    add_user_attached_policies(u.username)
+    u.show_attached_policies()
+
 
 if __name__ == "__main__":
   main()

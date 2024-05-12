@@ -12,15 +12,18 @@ class User:
   create_date = ""
   pw_date     = ""
   groups = []
-  attached_user_policies = []
-  inline_user_policies = []
+  attached_policies = []
+  inline_policies = []
 
   def __init__(self, username, userid, arn, create_date, pw_date):
-    self.username    = username
-    self.userid      = userid
-    self.arn         = arn
-    self.create_date = create_date
-    self.pw_date     = pw_date
+    self.username          = username
+    self.userid            = userid
+    self.arn               = arn
+    self.create_date       = create_date
+    self.pw_date           = pw_date
+    self.groups            = []
+    self.inline_policies   = []
+    self.attached_policies = []
 
   def show(self):
     print(f"UserName: {self.username}, UserId: {self.userid}, Arn: {self.arn}, Created: {self.create_date}, PWDate: {self.pw_date}")
@@ -33,17 +36,17 @@ class User:
       g.show()
 
   def add_attached_policy(self, policy):
-    self.attached_user_policies.append(policy)
+    self.attached_policies.append(policy)
 
   def add_inline_policy(self, policy):
-    self.inline_user_policies.append(policy)
+    self.inline_policies.append(policy)
 
-  def show_attached_user_policies(self):
-    for a in self.attached_user_policies:
+  def show_attached_policies(self):
+    for a in self.attached_policies:
       a.show()
 
-  def show_inline_user_policies(self):
-    for a in self.inline_user_policies:
+  def show_inline_policies(self):
+    for a in self.inline_policies:
       a.show()
 
 
@@ -62,6 +65,10 @@ class Group:
 
   def show(self):
     print(f"GroupName: {self.groupname}, GroupId: {self.groupid}, Arn: {self.arn}")
+
+  def show_users(self):
+    for u in self.users:
+      print(f"user: {u.username}")
     
 
 class Policy:
