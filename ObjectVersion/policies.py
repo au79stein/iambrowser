@@ -14,6 +14,7 @@ service = "iam"
 
 attachedPolicyList = []
 users = []
+groups = []
 
 
 def locate_policy_by_arn(policyarn):
@@ -41,6 +42,15 @@ def locate_user(username):
       print(f"found {username}")
       #u.show()
       return u
+  return None
+
+
+def locate_group_by_name(groupname):
+  '''lookup a group by its groupname'''
+  for gn in groups:
+    if gn.groupname == groupname:
+      gn.show()
+      return gn
   return None
 
 
@@ -74,6 +84,15 @@ def build_list_of_users(userList):
       userList.append(P.User(user['UserName'], user['UserId'], user['Arn'], createdate, pwdate))
 
 
+def build_list_of_groups(groupList):
+  '''create a list of group objects'''
+  iam = boto3.client('iam', region_name=region)
+  paginator = iam.get_paginator('list_groups')
+  for response in paginator.paginate():
+    for group in response['Groups']:
+      groupList.append(P.Group(group['GroupName'], group['GroupId'], group['Arn']))
+
+  
 def build_attached_policies_list(policyList):
   '''creates a list of attached policies
      attached policies are a subset of all policies
@@ -96,12 +115,6 @@ def update_policy_data(policyarn):
     p.defaultversionid =  response['DefaultVersionId']
     p.show()
 
-  #print(f"PolicyName: {response['PolicyName']}, PolicyId: {response['PolicyId']}, AttachmentCount: {response['AttachmentCount']}, DefaultVersionId: {response['DefaultVersionId']}, Arn: {response['Arn']}", end="")
-  #print()
-  #print("temporarily added call here to get_policy_version to display document also")
-  #versionid = response['DefaultVersionId']
-  #get_policy_version(policyarn, versionid)
-
 
 def get_policy_document(policyarn, versionid):
   '''get the policy document using policyarn and versionid'''
@@ -114,6 +127,21 @@ def get_policy_document(policyarn, versionid):
   else:
     print(f"policy arn {policyarn} not found")
   
+
+def add_users_in_group(groupname):
+  gn = locate_group_by_name(groupname)
+  iam = boto3.client('iam', region_name=region)
+  paginator = iam.get_paginator('get_group')
+  group_params = {'GroupName': groupname}
+  try:
+    for response in paginator.paginate(**group_params):
+      for user in response['Users']:
+        
+
+        print(f"UserName: {user['UserName']}", end="")
+  except ClientError:
+    print("couldn't list users for {}".format(groupname))
+
   
 def main():
   build_attached_policies_list(attachedPolicyList)
@@ -121,6 +149,9 @@ def main():
 
   build_list_of_users(users)
   print_list(users, msg="List of Users")
+
+  build_list_of_groups(groups)
+  print_list(groups, msg="List of Groups")
 
   rich = locate_user('rgoldstein')
   if rich:

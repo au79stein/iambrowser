@@ -53,6 +53,7 @@ class Group:
   groupname = ""
   groupid   = ""
   arn       = ""
+  users     = []
 
   def __init__(self, groupname, groupid, arn):
     self.groupname = groupname
