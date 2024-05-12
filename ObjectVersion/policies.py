@@ -55,7 +55,7 @@ def locate_group_by_name(groupname):
   '''lookup a group by its groupname'''
   for gn in groups:
     if gn.groupname == groupname:
-      gn.show()
+      #gn.show()
       return gn
   return None
 
@@ -134,9 +134,10 @@ def get_policy_document(policyarn, versionid):
     print(f"policy arn {policyarn} not found")
   
 
-def list_groups_for_user(username):
-  '''list groups to which a user belongs'''
-  linenum = 1
+def add_groups_to_user(username):
+  '''list groups to which a user belongs
+     and add those groups to users list'''
+  #linenum = 1
   un = locate_user_by_name(username)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_groups_for_user')
@@ -147,15 +148,15 @@ def list_groups_for_user(username):
         gn = locate_group_by_name(group['GroupName'])
         if gn:
           un.groups.append(gn)
-        print(f"{linenum: 4d}: ", end="")
-        print(f"GroupName: {group['GroupName']},  GroupId: {group['GroupId']}", end="")
-        print()
-        linenum = linenum + 1
+        #print(f"{linenum: 4d}: ", end="")
+        #print(f"GroupName: {group['GroupName']},  GroupId: {group['GroupId']}", end="")
+        #print()
+        #linenum = linenum + 1
   except ClientError:
     print("couldn't list groups for {}".format(username))
 
 
-def add_users_in_group(groupname):
+def add_users_into_group(groupname):
   '''get users in a group and add them to the group membership list'''
   gn = locate_group_by_name(groupname)
   iam = boto3.client('iam', region_name=region)
@@ -186,26 +187,21 @@ def add_user_attached_policies(username):
   except ClientError:
     print("couldn't list attached policies for {}".format(username))
 
-'''
-============================
-def list_attached_user_policies(username):
-  linenum = 1
-  iam = boto3.client('iam', region_name=region)
-  paginator = iam.get_paginator('list_attached_user_policies')
-  policy_params = {'UserName': username}
-  try:
-    for response in paginator.paginate(**policy_params):
-      for policy in response['AttachedPolicies']:
-        print(f"{linenum: 4d}: ", end="")
-        print(f"PolicyName: {policy['PolicyName']}", end="")
-        print()
-        linenum = linenum + 1
-  except ClientError:
-    print("couldn't list attached policies for {}".format(username))
 
-============================
-'''
+######################################
+# add_group_inline_policies_to_users #
+######################################
+# 1. get members of the group
+# 2. get policies for the group
+# 3. for each member, add policies 
+######################################
+def add_group_inline_policies_to_users(groupname):
+  group_members = []
 
+
+############################
+# add user_inline_policies #
+############################
 def add_user_inline_policies(username):
   '''get user inline policies'''
   u = locate_user_by_name(username)
@@ -237,7 +233,7 @@ def test_get_groups_for_user():
   ############################
   for u in users:
     print(f"Username = {u.username}")
-    list_groups_for_user(u.username)
+    add_groups_to_user(u.username)
     u.show_groups()
     print()
   
@@ -314,8 +310,20 @@ def add_users_to_groups():
       that is a member'''
   for g in groups:
     gn = locate_group_by_name(g.groupname)
-    add_users_in_group(g.groupname)
+    add_users_into_group(g.groupname)
     gn.show_users()
+
+
+def add_groups_to_users():
+  ''' loop through list of users
+      get list of groups to which they belong
+      add these groups to the users list
+      already have func to do this for one user'''
+  for u in users:
+    print(f"adding groups to {u.username}...")
+    add_groups_to_user(u.username)
+    u.show_groups()
+    print(f"done! \n")
 
 
 def init_build_lists():
@@ -336,6 +344,8 @@ def init_build_lists():
   print_list(users, msg="List of Users")
   print_list(groups, msg="List of Groups")
   print_list(attachedPolicyList, msg="List of Attached Policies")
+
+  add_groups_to_users()
 
 
 def main():
