@@ -333,6 +333,7 @@ def add_user_policies():
     print(f">> {u.username}")
     add_user_inline_policies(u.username)
     u.show_inline_policies()
+
     print(f"!! {u.username}")
     add_user_attached_policies(u.username)
     u.show_attached_policies()
@@ -362,6 +363,8 @@ def init_build_lists():
   ####################################################
   add_groups_to_users()
 
+  add_user_policies()
+
 
 def main():
 
@@ -373,6 +376,18 @@ def main():
   rich = locate_user_by_name('rgoldstein')
   if rich:
     rich.report()
+
+  dsilva = locate_user_by_name('dsilva')
+  if dsilva:
+    dsilva.report()
+
+  ibassi = locate_user_by_name('ibassi')
+  if ibassi:
+    ibassi.report()
+
+  mlimachi = locate_user_by_name('mlimachi')
+  if mlimachi:
+    mlimachi.report()
 
 
 if __name__ == "__main__":
