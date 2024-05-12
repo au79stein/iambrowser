@@ -173,7 +173,8 @@ def add_users_into_group(groupname):
 
   
 def add_user_attached_policies(username):
-  '''get user attached policies'''
+  '''get user attached policies
+     add them to user attached policies list'''
   u = locate_user_by_name(username)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_attached_user_policies')
@@ -203,7 +204,8 @@ def add_group_inline_policies_to_users(groupname):
 # add user_inline_policies #
 ############################
 def add_user_inline_policies(username):
-  '''get user inline policies'''
+  '''get user inline policies
+     add to user inline policies list'''
   u = locate_user_by_name(username)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_user_policies')
@@ -326,6 +328,16 @@ def add_groups_to_users():
     print(f"done! \n")
 
 
+def add_user_policies():
+  for u in users:
+    print(f">> {u.username}")
+    add_user_inline_policies(u.username)
+    u.show_inline_policies()
+    print(f"!! {u.username}")
+    add_user_attached_policies(u.username)
+    u.show_attached_policies()
+
+
 def init_build_lists():
   ##########################
   # build users and groups #
@@ -345,6 +357,9 @@ def init_build_lists():
   print_list(groups, msg="List of Groups")
   print_list(attachedPolicyList, msg="List of Attached Policies")
 
+  ####################################################
+  # tell users about the groups to which they belong #
+  ####################################################
   add_groups_to_users()
 
 
@@ -355,7 +370,10 @@ def main():
   ########################
   init_build_lists()
 
-  
+  rich = locate_user_by_name('rgoldstein')
+  if rich:
+    rich.report()
+
 
 if __name__ == "__main__":
   main()

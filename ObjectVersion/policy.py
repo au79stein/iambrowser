@@ -11,9 +11,10 @@ class User:
   arn         = ""
   create_date = ""
   pw_date     = ""
-  groups = []
+  groups            = []
+  group_policies    = []
   attached_policies = []
-  inline_policies = []
+  inline_policies   = []
 
   def __init__(self, username, userid, arn, create_date, pw_date):
     self.username          = username
@@ -22,6 +23,7 @@ class User:
     self.create_date       = create_date
     self.pw_date           = pw_date
     self.groups            = []
+    self.group_policies    = []
     self.inline_policies   = []
     self.attached_policies = []
 
@@ -48,6 +50,29 @@ class User:
   def show_inline_policies(self):
     for a in self.inline_policies:
       a.show()
+
+  def show_group_policies(self):
+    for gp in self.group_policies:
+      gp.show()
+
+  def report_policies(self):
+    print(f"Attached Policies\n")
+    self.show_attached_policies()
+
+    print(f"Inline Policies")
+    self.show_inline_policies()
+
+    print(f"Group Policies")
+    self.show_group_policies()
+
+  def report_groups(self):
+    print(f"Groups")
+    self.show_groups()
+
+  def report(self):
+    print(f"User Report: {self.username}::")
+    self.report_groups()
+    self.report_policies()
 
 
 class Group:
