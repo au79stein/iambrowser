@@ -195,47 +195,15 @@ def add_user_inline_policies(username):
     print("couldn't list inline policies for {}".format(username))
 
 
-def main():
-  build_attached_policies_list(attachedPolicyList)
-  print_list(attachedPolicyList, msg="List of Attached Policies")
-
-  build_list_of_users(users)
-  print_list(users, msg="List of Users")
-
-  build_list_of_groups(groups)
-  print_list(groups, msg="List of Groups")
-
-  rich = locate_user_by_name('rgoldstein')
-  if rich:
-    rich.show()
-  else:
-    print("user not found")
-
-  pol = locate_policy_by_name('terraform-staging-only')
-  if pol:
-    pol.show()
-  else:
-    print("policy not found")
-
-  update_policy_data('arn:aws:iam::aws:policy/PowerUserAccess')
-
-  polarn = locate_policy_by_arn('arn:aws:iam::aws:policy/PowerUserAccess')
-  if polarn:
-    polarn.show()
-  else:
-    print("policy arn not found")
-
+def test_get_policy_document():
   get_policy_document('arn:aws:iam::aws:policy/PowerUserAccess', 'v5')
 
-  gn = locate_group_by_name('devops-beginner')
-  add_users_in_group('devops-beginner')
-  gn.show_users()
 
-  gn = locate_group_by_name('admin')
-  add_users_in_group('admin')
-  gn.show_users()
+def test_update_policy_data():
+  update_policy_data('arn:aws:iam::aws:policy/PowerUserAccess')
 
 
+def test_inline_and_attached_policies():
   #################################################
   ### testing user inline and attached policies ###
   #################################################
@@ -254,8 +222,86 @@ def main():
     print(f">> {u.username}")
     add_user_inline_policies(u.username)
     u.show_inline_policies()
+    print(f"!! {u.username}")
     add_user_attached_policies(u.username)
     u.show_attached_policies()
+
+
+def test_lookup_groups(test_group_names):
+  for g in test_group_names:
+    testgrp = locate_group_by_name(g)
+    if testgrp:
+      testgrp.show()
+    else:
+      print(f"group {n} not found")
+
+
+def test_lookup_policies(test_policy_names, test_policy_arns):
+  for n in test_policy_names:
+    testpol = locate_policy_by_name(n)
+    if testpol:
+      testpol.show()
+    else:
+      print(f"named policy {n} not found")
+
+  for a in test_policy_arns:
+    testarn = locate_policy_by_arn(a)
+    if testarn:
+      testarn.show()
+    else:
+      print(f"policy arn {a} not found")
+
+
+def test_lookup_users(test_users):
+  for u in test_users:
+    testuser = locate_user_by_name(u)
+    if testuser:
+      testuser.show()
+    else:
+      print(f"user {u}not found")
+
+
+def add_users_to_groups():
+  for g in groups:
+    gn = locate_group_by_name(g.groupname)
+    add_users_in_group(g.groupname)
+    gn.show_users()
+
+
+def init_build_lists():
+  ##########################
+  # build users and groups #
+  ##########################
+  build_list_of_users(users)
+  build_list_of_groups(groups)
+
+  #########################################################
+  # build list of policies that are being used (attached) #
+  #########################################################
+  build_attached_policies_list(attachedPolicyList)
+
+  ##########################
+  # print users and groups #
+  ##########################
+  print_list(users, msg="List of Users")
+  print_list(groups, msg="List of Groups")
+  print_list(attachedPolicyList, msg="List of Attached Policies")
+
+
+def main():
+
+  ########################
+  # initialize and setup #
+  ########################
+  init_build_lists()
+
+  
+  test_policy_names = ['terraform-stagin-only']
+  test_policy_arns  = ['arn:aws:iam::aws:policy/PowerUserAccess']
+  test_lookup_policies(test_policy_names, test_policy_arns)
+
+  test_group_names = ['devops-beginner', 'admin']
+  test_lookup_groups(test_group_names)
 
 
 if __name__ == "__main__":
