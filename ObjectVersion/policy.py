@@ -3,29 +3,28 @@
 from pprint import pprint
 
 
-class User:
-  # Username: rgoldstein, Arn: arn:aws:iam::079704269206:user/rgoldstein, Created: 04/25/2024 PasswordLastUsed: 05/09/2024
-
-  username    = ""
-  userid      = ""
-  arn         = ""
-  create_date = ""
-  pw_date     = ""
-  groups            = []
-  group_policies    = []
-  attached_policies = []
-  inline_policies   = []
+  username                   = ""
+  userid                     = ""
+  arn                        = ""
+  create_date                = ""
+  pw_date                    = ""
+  groups                     = []
+  group_attached_policies    = []
+  group_inline_policies      = []
+  attached_policies          = []
+  inline_policies            = []
 
   def __init__(self, username, userid, arn, create_date, pw_date):
-    self.username          = username
-    self.userid            = userid
-    self.arn               = arn
-    self.create_date       = create_date
-    self.pw_date           = pw_date
-    self.groups            = []
-    self.group_policies    = []
-    self.inline_policies   = []
-    self.attached_policies = []
+    self.username                   = username
+    self.userid                     = userid
+    self.arn                        = arn
+    self.create_date                = create_date
+    self.pw_date                    = pw_date
+    self.groups                     = []
+    self.group_attached_policies    = []
+    self.group_inline_policies      = []
+    self.inline_policies            = []
+    self.attached_policies          = []
 
   def show(self):
     print(f"UserName: {self.username}, UserId: {self.userid}, Arn: {self.arn}, Created: {self.create_date}, PWDate: {self.pw_date}")
@@ -51,33 +50,46 @@ class User:
     for a in self.inline_policies:
       a.show()
 
-  def show_group_policies(self):
-    for gp in self.group_policies:
+  def show_group_attached_policies(self):
+    for gp in self.group_attached_policies:
       gp.show()
 
+
+  def show_group_inline_policies(self):
+    for gp in self.group_inline_policies:
+      gp.show()
+
+
   def report_policies(self):
-    print(f"Attached Policies\n")
+    print(f"Attached Policies")
     self.show_attached_policies()
 
     print(f"Inline Policies")
     self.show_inline_policies()
 
-    print(f"Group Policies")
-    self.show_group_policies()
+    print(f"Group Attached Policies")
+    self.show_group_attached_policies()
+
+    print(f"Group Inline Policies")
+    self.show_group_inline_policies()
+
 
   def report_groups(self):
-    print(f"Groups")
+    print(f"Group Report: {self.username}:::")
     self.show_groups()
 
+
   def report(self):
-    print(f"User Report: {self.username}::")
+    print(f"User Report: {self.username}:::")
     self.report_groups()
     self.report_policies()
 
 
+#############
+# G R O U P #
+#############
 class Group:
 
-  # 20: GroupName: devops-beginner,  GroupId: AGPARFDV6UGLOMCC4MNWD
   groupname = ""
   groupid   = ""
   arn       = ""
@@ -87,6 +99,9 @@ class Group:
     self.groupname = groupname
     self.groupid   = groupid
     self.arn       = arn
+    self.users             = []
+    self.attached_policies = []
+    self.inline_policies   = []
 
   def show(self):
     print(f"GroupName: {self.groupname}, GroupId: {self.groupid}, Arn: {self.arn}")
@@ -94,8 +109,28 @@ class Group:
   def show_users(self):
     for u in self.users:
       print(f"user: {u.username}")
+
+  def show_inline_policies(self):
+    print(f"showing inline policies for group {self.groupname}: ")
+    for p in self.inline_policies:
+      print(f"policy name: {p.policyname}")
+
+  def show_attached_policies(self):
+    print(f"showing attached policies for group {self.groupname}: ")
+    for p in self.attached_policies:
+      print(f"policy name: {p.policyname}")
+
+  def report(self):
+    print(f"Attached Group Policies for {self.groupname}")
+    self.show_attached_policies()
+ 
+    print(f"Group Members:")
+    self.show_users()
     
 
+###############
+# P O L I C Y #
+###############
 class Policy:
   policyname         = ""
   policyid           = ""
