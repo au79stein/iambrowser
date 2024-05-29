@@ -1,0 +1,14 @@
+admin_policies:
+  - admin
+  - terraform-staging-only
+  - AdministratorAccess-admin-201501281707
+  
+allowed_ports: 
+  - 22
+  - 80
+  - 443
+  - 8080
+
+insecure_cidrs:
+  - 0.0.0.0/0
+

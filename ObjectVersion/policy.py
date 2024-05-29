@@ -2,6 +2,13 @@
 # user.py
 from pprint import pprint
 
+RESET  = "\033[0m"
+RED    = "\033[0;31m"
+GREEN  = "\033[0;32m"
+YELLOW = "\033[0;33m"
+CYAN   = "\033[0;36m"
+
+
 ###########
 # U S E R #
 ###########
@@ -67,7 +74,7 @@ class User:
       gp.show()
 
   def show_group_policies(self):
-    print(f"{self.username} group policies:")
+    #print(f"{self.username} group policies:")
     self.show_group_inline_policies()
     self.show_group_attached_policies()
 
@@ -87,15 +94,59 @@ class User:
 
 
   def report_groups(self):
-    print(f"Group Report: {self.username}:::")
+    #print(f"Group Report: {self.username}:::")
     self.show_groups()
 
 
   def report(self):
-    print(f"User Report: {self.username}:::")
+    #print(f"User Report: {self.username}:::")
     self.report_groups()
     self.report_policies()
     self.show_group_policies()
+    self.db_row()
+
+  def db_row(self):
+    debug = 0
+
+    if debug > 0:
+      print('Groups')
+    for g in self.groups:
+      if g.groupname in Policy.admin_policies:
+        HDR=RED
+      else:
+        HDR=RESET
+      print(f"{HDR}{self.username},GROUPS,{g.groupid},{g.groupname},{g.arn}{RESET}")
+
+    if debug > 0:
+      print('Attached Policies')
+    for ap in self.attached_policies:
+      if ap.policyname in Policy.admin_policies:
+        HDR=RED
+      else:
+        HDR=RESET
+      print(f"{HDR}{self.username},ATTACHED_POLICY,{ap.policyid},{ap.policyname},{ap.arn},{ap.attachmentcount},{ap.defaultversionid}{RESET}")
+
+    if debug > 0:
+      print('Inline Policies')
+    for ip in self.inline_policies:
+      print(f"{self.username},INLINE_POLICY,{ip.policyid},{ip.policyname},{ip.arn},{ip.attachmentcount},{ip.defaultversionid}")
+
+    if debug > 0:
+      print('Group Attached Policies')
+    for gap in self.group_attached_policies:
+      if gap.policyname in Policy.admin_policies:
+        HDR=RED
+      else:
+        HDR=RESET
+      print(f"{HDR}{self.username},GROUP_ATTACHED,{gap.policyid},{gap.policyname},{gap.arn},{gap.attachmentcount},{gap.defaultversionid}{RESET}")
+
+    if debug > 0:
+      print('Group Inline Policies')
+    for gip in self.group_inline_policies:
+      print(f"{self.username},GROUP_INLINE,{gip.policyid},{gip.policyname},{gip.arn},{gip.attachmentcount},{gip.defaultversionid}")
+
+    print()
+
 
 
 #############
@@ -118,16 +169,22 @@ class Group:
     self.user_list = []
 
   def copy_attached_policies_to_user(self, userobj):
+    debug = 0
     for ap in self.attached_policies:
       userobj.group_attached_policies.append(ap)
-      print(f"copied attachedp {ap.policyname} to {userobj.username}")
-    print(f"{self.groupname} -> {userobj.username} = copied")
+      if debug > 0:
+        print(f"copied attachedp {ap.policyname} to {userobj.username}")
+    if debug > 0:
+      print(f"{self.groupname} -> {userobj.username} = copied")
 
   def copy_inline_policies_to_user(self, userobj):
+    debug = 0
     for ilp in self.inline_policies:
       userobj.group_inline_policies.append(ilp)
-      print(f"copied inlinep {ilp.policyname} to {userobj.username}")
-    print(f"{self.groupname} -> {userobj.username} = copied")
+      if debug > 0:
+        print(f"copied inlinep {ilp.policyname} to {userobj.username}")
+    if debug > 0:
+      print(f"{self.groupname} -> {userobj.username} = copied")
 
   def userlist(self):
     for u in self.users:
@@ -163,11 +220,12 @@ class Group:
 # P O L I C Y #
 ###############
 class Policy:
-  policyname         = ""
-  policyid           = ""
-  arn                = ""
-  attachmentcount    = 0
-  defaultversionid   = ""
+  admin_policies      = []
+  #policyname         = ""
+  #policyid           = ""
+  #arn                = ""
+  #attachmentcount    = 0
+  #defaultversionid   = ""
   # not sure, do I want to save the policy document
   document           = ""
 

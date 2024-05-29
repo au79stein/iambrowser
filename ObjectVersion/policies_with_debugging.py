@@ -4,7 +4,6 @@ import sys
 import pyperclip
 import boto3
 from botocore.exceptions import ClientError
-import yaml
 from pprint import pprint
 from pick import pick
 import policy as P
@@ -27,18 +26,6 @@ inlinePolicyList      = []
 attachedPolicyList    = []
 users = []
 groups = []
-
-
-# read config file
-def read_config(cfile="config.yml"):
-  with open(cfile) as cf:
-    try:
-      config = yaml.safe_load(cf)
-      admin_policies = config['admin_policies']
-      #print(f"admin_policies: {admin_policies}")
-    except yaml.YAMLError as exc:
-      print(exc)
-    return admin_policies
 
 
 # temp to display test show 
@@ -122,9 +109,8 @@ def print_list(policyList, msg=""):
 #######################
 def build_list_of_users(userList):
   '''creates a list of user objects'''
-  debug = 0
-  if debug > 0:
-    print(f"build list of users...")
+  debug = 1
+  print(f"build list of users...")
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_users')
   for response in paginator.paginate():
@@ -146,9 +132,8 @@ def build_list_of_users(userList):
 ########################
 def build_list_of_groups(groupList):
   '''create a list of group objects'''
-  debug = 0
-  if debug > 0:
-    print(f"build list of groups...")
+  debug = 1
+  print(f"build list of groups...")
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_groups')
   for response in paginator.paginate():
@@ -168,9 +153,8 @@ def build_attached_policies_list(policyList):
   '''creates a list of attached policies
      attached policies are a subset of all policies
      but are actually attached to something'''
-  debug = 0
-  if debug > 0:
-    print(f"build attached policies list - all policies attached to account...")
+  debug = 1
+  print(f"build attached policies list - all policies attached to account...")
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_policies')
   policy_params = {'OnlyAttached': True}
@@ -204,15 +188,13 @@ def build_inline_policies_lists():
 
 def update_policy_data(policyarn):
   '''update a policy object with attachment count and version id'''
-  debug = 0
   iam = boto3.client('iam', region_name=region)
   response = iam.get_policy(PolicyArn=policyarn)['Policy']
   p = locate_policy_by_name(response['PolicyName'])
   if p:
     p.attachmentcount  =  response['AttachmentCount']
     p.defaultversionid =  response['DefaultVersionId']
-    if debug > 0:
-      p.show()
+    p.show()
 
 
 def update_all_policies_data():
@@ -242,9 +224,8 @@ def get_policy_document(policyarn, versionid):
 ##################################
 def add_inline_policies_to_group(groupname):
   '''list group inline policies'''
-  debug = 0
-  if debug > 0:
-    print(f"{CYAN}---adding inline group policies to group {groupname}{RESET}")
+  debug = 1
+  print(f"{CYAN}---adding inline group policies to group {groupname}{RESET}")
   gn = locate_group_by_name(groupname)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_group_policies')
@@ -252,8 +233,7 @@ def add_inline_policies_to_group(groupname):
   try:
     for response in paginator.paginate(**group_params):
       for policy in response['PolicyNames']:
-        if debug > 0:
-          print(f"!>!>in add inline policies... policy = {policy}")
+        print(f"!>!>in add inline policies... policy = {policy}")
         pn = locate_policy_by_name(policy)
         if pn:
           if pn not in gn.inline_policies:
@@ -271,9 +251,8 @@ def add_inline_policies_to_group(groupname):
 def add_attached_policies_to_group(groupname):
   '''get list of group attached policies
      add the policies to the group attached policy list'''
-  debug = 0
-  if debug > 0:
-    print(f"{CYAN}---adding attached group policies to group {groupname}{RESET}")
+  debug = 1
+  print(f"{CYAN}---adding attached group policies to group {groupname}{RESET}")
   gn = locate_group_by_name(groupname)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_attached_group_policies')
@@ -298,9 +277,8 @@ def add_attached_policies_to_group(groupname):
 def add_groups_to_user(username):
   '''list groups to which a user belongs
      and add those groups to users list'''
-  debug = 0
-  if debug > 0:
-    print(f"{CYAN}Adding groups to {username}{RESET}")
+  debug = 1
+  print(f"{CYAN}Adding groups to {username}{RESET}")
   un = locate_user_by_name(username)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_groups_for_user')
@@ -323,9 +301,8 @@ def add_groups_to_user(username):
 ########################
 def add_users_into_group(groupname):
   '''get users in a group and add them to the group membership list'''
-  debug = 0
-  if debug > 0:
-    print(f"---{CYAN}adding group users into group {groupname}{RESET}")
+  debug = 1
+  print(f"---{CYAN}adding group users into group {groupname}{RESET}")
   gn = locate_group_by_name(groupname)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('get_group')
@@ -350,9 +327,8 @@ def add_users_into_group(groupname):
 def add_user_attached_policies(username):
   '''get user attached policies
      add them to user attached policies list'''
-  debug = 0
-  if debug > 0:
-    print(f"---{YELLOW}Adding user attached policies for {username}{RESET}")
+  debug = 1
+  print(f"---{YELLOW}Adding user attached policies for {username}{RESET}")
   u = locate_user_by_name(username)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_attached_user_policies')
@@ -376,9 +352,8 @@ def add_user_attached_policies(username):
 def add_group_inline_policies(groupname):
   '''get group inline policies
      add to group inline policies list'''
-  debug = 0
-  if debug > 0:
-    print(f"---{YELLOW}Adding group inline policies for {groupname}{RESET}")
+  debug = 1
+  print(f"---{YELLOW}Adding group inline policies for {groupname}{RESET}")
   gn = locate_group_by_name(groupname)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_group_policies')
@@ -405,9 +380,8 @@ def add_group_inline_policies(groupname):
 def add_user_inline_policies(username):
   '''get user inline policies
      add to user inline policies list'''
-  debug = 0
-  if debug > 0:
-    print(f"---{YELLOW}Adding user inline policies for {username}{RESET}")
+  debug = 1
+  print(f"---{YELLOW}Adding user inline policies for {username}{RESET}")
   u = locate_user_by_name(username)
   iam = boto3.client('iam', region_name=region)
   paginator = iam.get_paginator('list_user_policies')
@@ -435,27 +409,23 @@ def add_user_inline_policies(username):
 ######################################
 def add_group_policies_to_users():
   def populate_mbrlist(g, mbrlist):
-    debug = 0
     for mbr in g.users:
       mbrlist.append(mbr)
 
     mlen = len(mbrlist)
-    if debug > 0:
-      print(f"mbrlist length: {mlen}")
-      for m in mbrlist:
-        print(f"mbrlist: mbr: {m.username}") 
+    print(f"mbrlist length: {mlen}")
+    for m in mbrlist:
+      print(f"mbrlist: mbr: {m.username}") 
     return mbrlist
 
   def populate_attached_policy_list(g, plist):
-    debug = 0
     for p in g.attached_policies:
       plist.append(p)
 
     plen = len(plist)
-    if debug > 0:
-      print(f"plist length: {plen}")
-      for x in plist:
-        print(f"plist: policy name: {x.policyname}")
+    print(f"plist length: {plen}")
+    for x in plist:
+      print(f"plist: policy name: {x.policyname}")
     return plist
 
   def populate_inline_policy_list(g, plist):
@@ -463,16 +433,13 @@ def add_group_policies_to_users():
       plist.append(p)
 
     plen = len(plist)
-    if debug > 0:
-      print(f"plist length: {plen}")
-      for x in plist:
-        print(f"plist: policy name: {x.policyname}")
+    print(f"plist length: {plen}")
+    for x in plist:
+      print(f"plist: policy name: {x.policyname}")
     return plist
 
   def assign_group_policies_to_members_by_group(g, inlinepollist, attachpollist, mbrlist):
-    debug = 0
-    if debug > 0:
-      print(f"   ---assigning group policies for groupname: {g.groupname} to members...")
+    print(f"   ---assigning group policies for groupname: {g.groupname} to members...")
     for m in mbrlist:
       for i in inlinepollist:
         if i not in m.group_inline_policies:
@@ -480,22 +447,19 @@ def add_group_policies_to_users():
       for a in attachpollist:
         if a not in attachpollist:
           m.group_attached_policies.append(a)
-      if debug > 0:
-        print(f"{RED}attached group {g.groupname} policies to user {m.username}{RESET}")
-        print(f"   ---{m.username}: {m.show_group_policies()}")
-        print()
+      print(f"{RED}attached group {g.groupname} policies to user {m.username}{RESET}")
+      print(f"   ---{m.username}: {m.show_group_policies()}")
+    print()
 
   ncnt = 0
-  debug = 0
-  if debug > 0:
-    print(f"---{CYAN}adding group policies to users...{RESET}")
+  debug = 1
+  print(f"---{CYAN}adding group policies to users...{RESET}")
   mbrlist = []
   inlinepollist = []
   attachpollist = []
 
   for g in groups:
-    if debug > 0:
-      print(f"group name: {g.groupname}")
+    print(f"group name: {g.groupname}")
     mbrlist = []
     populate_mbrlist(g, mbrlist)
 
@@ -606,13 +570,10 @@ def test_lookup_users(test_users):
 # add attached polices to all groups #
 ######################################
 def add_attached_policies_to_all_groups():
-  debug = 0
   for g in groups:
-    if debug > 0:
-      print(f"{CYAN}Adding Inline Policies To Group")
+    print(f"{CYAN}Adding Inline Policies To Group")
     add_inline_policies_to_group(g.groupname)
-    if debug > 0:
-      print(f"{CYAN}Adding Attached Policies To Group")
+    print(f"{CYAN}Adding Attached Policies To Group")
     add_attached_policies_to_group(g.groupname)
     #g.show_attached_policies()
 
@@ -625,9 +586,8 @@ def add_users_to_groups():
       get the users in each group
       update the group with the names of each user
       that is a member'''
-  debug = 0
-  if debug > 0:
-    print(f"{CYAN}Adding group users into groups{RESET}")
+  debug = 1
+  print(f"{CYAN}Adding group users into groups{RESET}")
   for g in groups:
     gn = locate_group_by_name(g.groupname)
     add_users_into_group(g.groupname)
@@ -642,32 +602,26 @@ def add_groups_to_users():
       get list of groups to which they belong
       add these groups to the users list
       already have func to do this for one user'''
-  debug = 0
-  if debug > 0:
-    print(f"{CYAN}Adding Groups To Users...{RESET}")
+  print(f"{CYAN}Adding Groups To Users...{RESET}")
   for u in users:
-    if debug > 0:
-      print(f"{u.username} ", end="")
+    print(f"{u.username} ", end="")
     add_groups_to_user(u.username)
     #u.show_groups()
-    if debug > 0:
-      print(f"done!")
+    print(f"done!")
 
 
 #####################
 # add user policies #
 #####################
 def add_user_policies():
-  debug = 0
-  if debug > 0:
-    print(f"{CYAN}Adding User Policies...{RESET}")
+  debug = 1
+  print(f"{CYAN}Adding User Policies...{RESET}")
   for u in users:
     #print(f">> {u.username}")
     add_user_inline_policies(u.username)
     #u.show_inline_policies()
 
-    if debug > 0:
-      print(f"!! {u.username}")
+    print(f"!! {u.username}")
     add_user_attached_policies(u.username)
     #u.show_attached_policies()
 
@@ -717,17 +671,10 @@ def init_build_lists():
   ###############################################################
   add_user_policies()
 
-  update_all_policies_data()
+  #update_all_policies_data()
 
 
 def main():
-
-  ## get config parameters ##
-  admin_policies = read_config()
-  for ap in admin_policies:
-    P.Policy.admin_policies.append(ap)
-  #print(f"Policy.admin_policies = {P.Policy.admin_policies}")
-  
 
   ########################
   # initialize and setup #
@@ -743,38 +690,29 @@ def main():
       g.copy_inline_policies_to_user(u)
       g.copy_attached_policies_to_user(u)
 
-  '''
   rich = locate_user_by_name('rgoldstein')
   if rich:
-    rich.db_row()
+    rich.report()
     print()
-    #rich.show_attached_policies()
-    #rich.show_inline_policies()
-    #rich.show_group_attached_policies()
-    #rich.show_group_inline_policies()
+    rich.show_attached_policies()
+    rich.show_inline_policies()
+    rich.show_group_attached_policies()
+    rich.show_group_inline_policies()
 
   dsilva = locate_user_by_name('dsilva')
   if dsilva:
-    dsilva.db_row()
+    dsilva.report()
     print()
 
   ibassi = locate_user_by_name('ibassi')
   if ibassi:
-    ibassi.db_row()
+    ibassi.report()
     print()
 
   mlimachi = locate_user_by_name('mlimachi')
   if mlimachi:
-    mlimachi.db_row()
+    mlimachi.report()
     print()
-
-  '''
-
-  for u in users:
-    u.db_row()
-
-
-
 
 
 if __name__ == "__main__":
