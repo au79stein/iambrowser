@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Sid": "", "Effect": "Allow", "Action": ["route53:ListHostedZones", "route53:GetChange"], "Resource": "*"}, {"Sid": "", "Effect": "Allow", "Action": "route53:ChangeResourceRecordSets", "Resource": "arn:aws:route53:::hostedzone/Z02696533F219SY347QXI"}]}

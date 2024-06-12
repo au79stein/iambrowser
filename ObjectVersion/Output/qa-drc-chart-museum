@@ -1,0 +1,1 @@
+{"Statement": [{"Action": ["s3:ListBucket"], "Effect": "Allow", "Resource": "arn:aws:s3:::drchrono-chart-museum", "Sid": "AllowListObjects"}, {"Action": ["s3:DeleteObject", "s3:GetObject", "s3:PutObject"], "Effect": "Allow", "Resource": "arn:aws:s3:::drchrono-chart-museum/*", "Sid": "AllowObjectsCRUD"}], "Version": "2012-10-17"}

@@ -1,0 +1,1 @@
+{"Statement": [{"Action": ["s3:GetObjectVersion", "s3:GetObject"], "Effect": "Allow", "Resource": "arn:aws:s3:::drchrono-artifacts-prod/*", "Sid": ""}], "Version": "2012-10-17"}

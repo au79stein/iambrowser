@@ -1,0 +1,1 @@
+{"Statement": [{"Action": ["sqs:SendMessage", "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:ListQueues", "sqs:GetQueueUrl"], "Effect": "Allow", "Resource": "*"}], "Version": "2012-10-17"}

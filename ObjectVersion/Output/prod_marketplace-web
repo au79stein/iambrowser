@@ -1,0 +1,1 @@
+{"Statement": [{"Action": "secretsmanager:GetSecretValue", "Effect": "Allow", "Resource": "arn:aws:secretsmanager:us-east-1:079704269206:secret:prod_deploy_marketplace-YCfqNB", "Sid": ""}], "Version": "2012-10-17"}

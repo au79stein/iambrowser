@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Sid": "VisualEditor0", "Effect": "Allow", "Action": ["quicksight:CreateReader", "quicksight:CreateUser", "quicksight:CreateAdmin"], "Resource": "arn:aws:quicksight:*:079704269206:user/*"}]}

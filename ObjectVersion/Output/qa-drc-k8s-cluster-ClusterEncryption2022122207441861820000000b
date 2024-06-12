@@ -1,0 +1,1 @@
+{"Statement": [{"Action": ["kms:Encrypt", "kms:Decrypt", "kms:ListGrants", "kms:DescribeKey"], "Effect": "Allow", "Resource": "arn:aws:kms:us-east-2:079704269206:key/2716ddea-b2c9-46d9-9435-2fe31a592311"}], "Version": "2012-10-17"}

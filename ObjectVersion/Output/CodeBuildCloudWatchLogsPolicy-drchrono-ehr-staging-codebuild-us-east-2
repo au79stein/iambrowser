@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Resource": ["arn:aws:logs:us-east-2:079704269206:log-group:drchrono-web-codepipeline-staging", "arn:aws:logs:us-east-2:079704269206:log-group:drchrono-web-codepipeline-staging:*"], "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]}]}

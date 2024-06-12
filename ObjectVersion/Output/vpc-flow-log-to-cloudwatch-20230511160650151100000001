@@ -1,0 +1,1 @@
+{"Statement": [{"Action": ["logs:PutLogEvents", "logs:DescribeLogStreams", "logs:DescribeLogGroups", "logs:CreateLogStream"], "Effect": "Allow", "Resource": "*", "Sid": "AWSVPCFlowLogsPushToCloudWatch"}], "Version": "2012-10-17"}

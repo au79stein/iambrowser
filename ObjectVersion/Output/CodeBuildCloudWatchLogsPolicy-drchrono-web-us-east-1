@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Resource": ["arn:aws:logs:us-east-1:079704269206:log-group:prod-poc-codebuild-logs", "arn:aws:logs:us-east-1:079704269206:log-group:prod-poc-codebuild-logs:*"], "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]}]}

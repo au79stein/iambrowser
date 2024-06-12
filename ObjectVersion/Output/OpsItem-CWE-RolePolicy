@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Effect": "Allow", "Action": "ssm:CreateOpsItem", "Resource": "*"}, {"Effect": "Allow", "Action": "ssm:AddTagsToResource", "Resource": "arn:aws:ssm:*:*:opsitem/*"}]}

@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Action": ["logs:FilterLogEvents"], "Resource": ["*"], "Effect": "Allow", "Sid": "Stmt1459155146000"}]}

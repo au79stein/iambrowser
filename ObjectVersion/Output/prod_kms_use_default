@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Sid": "", "Effect": "Allow", "Action": ["kms:Encrypt", "kms:Decrypt"], "Resource": "arn:aws:kms:us-east-1:079704269206:key/ae5a88b4-f9cf-429c-96e9-20fef2d99004"}]}

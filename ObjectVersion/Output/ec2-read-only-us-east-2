@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Action": ["cloudwatch:ListMetrics", "cloudwatch:GetMetricStatistics", "cloudwatch:Describe*", "autoscaling:Describe*", "elasticloadbalancing:Describe*", "ec2:Describe*"], "Resource": "*", "Effect": "Allow", "Condition": {"StringEquals": {"ec2:Region": "us-east-2"}}}]}

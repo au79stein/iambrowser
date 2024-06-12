@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Sid": "DBaccessKMS", "Effect": "Allow", "Action": ["kms:Decrypt", "kms:DescribeKey", "kms:GetPublicKey", "kms:ListAliases"], "Resource": "*", "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}}]}

@@ -1,0 +1,1 @@
+{"Statement": [{"Action": "secretsmanager:GetSecretValue", "Effect": "Allow", "Resource": "arn:aws:secretsmanager:us-east-2:079704269206:secret:stg_deploy_chat-tGIsoF", "Sid": ""}], "Version": "2012-10-17"}

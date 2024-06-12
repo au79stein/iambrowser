@@ -1,0 +1,1 @@
+{"Version": "2012-10-17", "Statement": [{"Sid": "CloudWatchEventsBuiltInTargetExecutionAccess", "Effect": "Allow", "Action": ["ec2:CreateSnapshot"], "Resource": ["*"]}]}

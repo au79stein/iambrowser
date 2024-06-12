@@ -1,0 +1,1 @@
+{"Statement": [{"Action": ["logs:PutLogEvents", "logs:DescribeLogStreams", "logs:CreateLogStream", "logs:CreateLogGroup", "cloudwatch:PutMetricData"], "Effect": "Allow", "Resource": "*", "Sid": ""}], "Version": "2012-10-17"}

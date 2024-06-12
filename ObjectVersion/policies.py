@@ -4,8 +4,9 @@ import sys
 import pyperclip
 import boto3
 from botocore.exceptions import ClientError
+import json
 import yaml
-from pprint import pprint
+import pprint
 from pick import pick
 import policy as P
 
@@ -211,6 +212,8 @@ def update_policy_data(policyarn):
   if p:
     p.attachmentcount  =  response['AttachmentCount']
     p.defaultversionid =  response['DefaultVersionId']
+    # try to save policy doc
+    get_policy_document(policyarn, p.defaultversionid)
     if debug > 0:
       p.show()
 
@@ -232,7 +235,16 @@ def get_policy_document(policyarn, versionid):
     iam = boto3.client('iam', region_name=region)
     response = iam.get_policy_version(PolicyArn=policyarn, VersionId=versionid)['PolicyVersion']
     pa.document = response['Document']
-    pa.show_document()
+    # open policy doc file
+    policy_file_name = f"./Output/{pa.policyname}"
+    pa.fdoc = open(policy_file_name, 'w')
+    #pprint_json_str = pprint.pformat(json.dumps(pa.document), indent=4, width=1, depth=1)
+    #pa.fdoc.write(json.dumps(pa.document))
+    #pa.fdoc.write(json.dumps(pprint_json_str))
+    #pa.fdoc.write(pprint_json_str)
+    pa.fdoc.write(json.dumps(pa.document))
+    pa.fdoc.close()
+    
   else:
     print(f"policy arn {policyarn} not found")
   

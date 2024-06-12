@@ -114,7 +114,7 @@ class User:
       if g.groupname in Policy.admin_policies:
         HDR=RED
       else:
-        HDR=RESET
+        HDR=''
       print(f"{HDR}{self.username},GROUPS,{g.groupid},{g.groupname},{g.arn}{RESET}")
 
     if debug > 0:
@@ -123,13 +123,13 @@ class User:
       if ap.policyname in Policy.admin_policies:
         HDR=RED
       else:
-        HDR=RESET
+        HDR=''
       print(f"{HDR}{self.username},ATTACHED_POLICY,{ap.policyid},{ap.policyname},{ap.arn},{ap.attachmentcount},{ap.defaultversionid}{RESET}")
 
     if debug > 0:
       print('Inline Policies')
     for ip in self.inline_policies:
-      print(f"{self.username},INLINE_POLICY,{ip.policyid},{ip.policyname},{ip.arn},{ip.attachmentcount},{ip.defaultversionid}")
+      print(f"{RED}{self.username},INLINE_POLICY,{ip.policyid},{ip.policyname},{ip.arn},{ip.attachmentcount},{ip.defaultversionid}{RESET}")
 
     if debug > 0:
       print('Group Attached Policies')
@@ -137,13 +137,17 @@ class User:
       if gap.policyname in Policy.admin_policies:
         HDR=RED
       else:
-        HDR=RESET
+        HDR=''
       print(f"{HDR}{self.username},GROUP_ATTACHED,{gap.policyid},{gap.policyname},{gap.arn},{gap.attachmentcount},{gap.defaultversionid}{RESET}")
 
     if debug > 0:
       print('Group Inline Policies')
     for gip in self.group_inline_policies:
-      print(f"{self.username},GROUP_INLINE,{gip.policyid},{gip.policyname},{gip.arn},{gip.attachmentcount},{gip.defaultversionid}")
+      if gip.policyname in Policy.admin_policies:
+        HDR=RED
+      else:
+        HDR=''
+      print(f"{HDR}{self.username},GROUP_INLINE,{gip.policyid},{gip.policyname},{gip.arn},{gip.attachmentcount},{gip.defaultversionid}{RESET}")
 
     print()
 
@@ -227,7 +231,7 @@ class Policy:
   #attachmentcount    = 0
   #defaultversionid   = ""
   # not sure, do I want to save the policy document
-  document           = ""
+  #document           = ""
 
   def __init__(self, policyname, policyid, arn):
     self.policyname       = policyname
@@ -235,6 +239,8 @@ class Policy:
     self.arn              = arn
     self.attachmentcount  = 0
     self.defaultversionid = ""
+    self.document         = ""
+    self.fdoc             = None
 
   def show(self, nl=False):
     print(f"PolicyId: {self.policyid}, PolicyName: {self.policyname},  Arn: {self.arn},  AttachCount: {self.attachmentcount}, DefaultVerId: {self.defaultversionid}")
